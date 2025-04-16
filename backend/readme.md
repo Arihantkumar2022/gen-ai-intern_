@@ -158,7 +158,7 @@ Copy
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/yourusername/ai-interviewer.git
+   git clone https://github.com/Arihantkumar2022/gen-ai-intern_.git
    cd ai-interviewer
 Create a .env file at the project root with your API keys (use .env.example as a template):
 bash
