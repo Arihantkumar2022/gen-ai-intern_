@@ -1,0 +1,61 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - DEEPGRAM_API_KEY=${DEEPGRAM_API_KEY}
+      - ELEVENLABS_API_KEY=${ELEVENLABS_API_KEY}
+      - LIVEKIT_API_KEY=${LIVEKIT_API_KEY}
+      - LIVEKIT_API_SECRET=${LIVEKIT_API_SECRET}
+      - LIVEKIT_URL=${LIVEKIT_URL:-wss://your-livekit-instance.livekit.cloud}
+      - OPENAI_MODEL=${OPENAI_MODEL:-gpt-4}
+      - ELEVENLABS_VOICE_ID=${ELEVENLABS_VOICE_ID:-21m00Tcm4TlvDq8ikWAM}
+      - ELEVENLABS_MODEL_ID=${ELEVENLABS_MODEL_ID:-eleven_monolingual_v1}
+      - DEEPGRAM_LANGUAGE=${DEEPGRAM_LANGUAGE:-en-US}
+      - DEBUG=${DEBUG:-True}
+      - PORT=${PORT:-8000}
+      - HOST=${HOST:-0.0.0.0}
+      - CORS_ORIGINS=${CORS_ORIGINS:-http://localhost:3000,http://localhost:3001}
+    volumes:
+      - ./backend/data:/app/data
+    networks:
+      - ai-interviewer-network
+
+  admin:
+    build:
+      context: ./frontend/admin
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - VITE_API_URL=http://backend:8000
+    depends_on:
+      - backend
+    networks:
+      - ai-interviewer-network
+
+  candidate:
+    build:
+      context: ./frontend/candidate
+      dockerfile: Dockerfile
+    ports:
+      - "3001:3001"
+    environment:
+      - VITE_API_URL=http://backend:8000
+    depends_on:
+      - backend
+    networks:
+      - ai-interviewer-network
+
+networks:
+  ai-interviewer-network:
+    driver: bridge
+
+volumes:
+  data:
